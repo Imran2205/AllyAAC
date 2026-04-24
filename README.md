@@ -11,7 +11,7 @@ The Android app is included as the `AllyACCApp` submodule. Please see `AllyACCAp
 After cloning, run `git submodule update --init --recursive` to fetch the `AllyACCApp` folder.
 
 ## Data
-The dataset is available in the dataset folder. 
+The dataset is available in the `dataset` folder. 
 For each participant, the data is split into training and test sets. 
 Only the IMU data is included here. To protect participant privacy, 
 we are not sharing the original video data at this stage. 
