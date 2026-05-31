@@ -1452,7 +1452,7 @@ if __name__ == "__main__":
             'patience': 5,  # Number of epochs to wait before reducing learning rate
             'early_stopping_patience': 8,  # Patience for early stopping
             'sampling_rate': 50,  # IMU data sampling rate in Hz
-            'labeled_data_dir': f'/./dataset/{user}',  # Directory with class-labeled files
+            'labeled_data_dir': f'./dataset/{user}',  # Directory with class-labeled files
             'gradient_clipping': True,  # Whether to use gradient clipping
             'clip_value': 1.0,  # Maximum gradient norm
             'use_class_weights': True,  # Whether to use class weights in loss function
