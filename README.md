@@ -22,8 +22,7 @@ necessary motion information for activity recognition.
 
 ## Model training
 
-The training scripts use Python 3.11. The released dependency list was created from the `act_recog` conda environment, which used Python 3.11.11.
-
+The training scripts is tested with Python 3.11.
 Install the model-training dependencies with a Python virtual environment:
 
 ```bash
