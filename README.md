@@ -49,7 +49,7 @@ Then run supervised training:
 python model/supervised_train_on_all_task.py
 ```
 
-## Updated results
+## Results
 
 Note: We cleaned up the data and reran the training. The updated results are shown below. The best pretraining strategy for each motor-impaired participant is unchanged from the paper, although the updated results show slight numerical differences.
 
