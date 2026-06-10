@@ -120,7 +120,7 @@ def create_metadata_file(class_mapping_id_name, norm_stats, output_path="model_m
 # MODEL CONVERSION
 ###########################################
 
-model_path = "/home/ibk5106/projects/projects/gesture_recognition/gesture_model/output_pretraining_comparison_2/sharon/pretraining_comparison/contrastive/best_supervised_model.pth"
+model_path = "./output/P04/pretraining_comparison/contrastive/best_supervised_model.pth"
 class_map_file = os.path.join(
     os.path.dirname(
         model_path
