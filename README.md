@@ -48,3 +48,9 @@ Then run supervised training:
 ```bash
 python model/supervised_train_on_all_task.py
 ```
+
+## Updated results
+
+Note: We cleaned up the data and reran the training. The updated results are shown below. The best pretraining strategy for each motor-impaired participant is unchanged from the paper, although the updated results show slight numerical differences.
+
+![F1 score by participant and pretraining strategy](output/pretraining_macro_f1_grouped_barchart.png)
