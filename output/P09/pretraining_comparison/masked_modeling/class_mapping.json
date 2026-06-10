@@ -1,0 +1,6 @@
+{
+  "click": 0,
+  "rest": 1,
+  "swipe_left": 2,
+  "swipe_right": 3
+}

@@ -1,0 +1,6 @@
+{
+  "circle": 0,
+  "go_away": 1,
+  "raise_hand": 2,
+  "rest": 3
+}

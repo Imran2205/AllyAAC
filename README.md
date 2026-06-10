@@ -50,7 +50,17 @@ python model/supervised_train_on_all_task.py
 ```
 
 ## Results
+We pretrained the model using three different strategies: 
+contrastive learning, CPC, and masked modeling. 
+We then trained the model for gesture recognition in a supervised setting.
 
-Note: We cleaned up the data and reran the training. The updated results are shown below. The best pretraining strategy for each motor-impaired participant is unchanged from the paper, although the updated results show slight numerical differences.
+For motor-impaired participants, different pretraining strategies performed better 
+depending on their gesture types, as discussed in the paper. For participants 
+without motor impairments, the scores across all three strategies were comparable.
 
-![F1 score by participant and pretraining strategy](output/pretraining_macro_f1_grouped_barchart.png)
+Note: We cleaned up the data and reran the training. 
+The updated results are shown below. 
+The best pretraining strategy for each motor-impaired participant is 
+unchanged from the paper, although the updated results show slight numerical differences.
+
+![F1 score by participant and pretraining strategy](output/pretraining_macro_f1_grouped_barchart_all_participants.png)
