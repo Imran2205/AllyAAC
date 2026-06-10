@@ -60,7 +60,7 @@ without motor impairments, the scores across all three strategies were comparabl
 
 Note: We cleaned up the data and reran the training. 
 The updated results are shown below. 
-The slight numerical differences from the paper are due to this data cleanup and rerun. 
+The slight numerical differences from the paper are due to this data cleanup. 
 However, the overall trend remains the same: the best pretraining strategy for each 
 motor-impaired participant is unchanged.
 
