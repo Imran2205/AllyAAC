@@ -60,7 +60,8 @@ without motor impairments, the scores across all three strategies were comparabl
 
 Note: We cleaned up the data and reran the training. 
 The updated results are shown below. 
-The best pretraining strategy for each motor-impaired participant is 
-unchanged from the paper, although the updated results show slight numerical differences.
+The slight numerical differences from the paper are due to this data cleanup and rerun. 
+However, the overall trend remains the same: the best pretraining strategy for each 
+motor-impaired participant is unchanged.
 
 ![F1 score by participant and pretraining strategy](output/pretraining_macro_f1_grouped_barchart_all_participants.png)
