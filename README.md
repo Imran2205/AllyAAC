@@ -32,7 +32,8 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-The scripts load participant configs from `config/pretraining` and `config/supervised_training`. Data is read from `dataset`, pretrained models are written to `pretrained_*_models`, and supervised results are written to `output`.
+The scripts load participant configs from `config/pretraining` and `config/supervised_training`. Data is read from `dataset`, 
+pretrained models are written to `pretrained_*_models`, and supervised results are written to `output`.
 
 Run the three pretraining scripts first:
 
