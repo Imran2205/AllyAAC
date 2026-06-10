@@ -1,0 +1,7 @@
+torch==2.4.0
+numpy==2.0.1
+pandas==2.2.3
+scikit-learn==1.6.1
+scipy==1.15.2
+matplotlib==3.10.1
+natsort==8.4.0

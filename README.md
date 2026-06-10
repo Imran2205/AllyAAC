@@ -20,3 +20,31 @@ either by de-identifying the videos through face and identifiable-feature
 blurring or by providing pose/skeleton representations that preserve the 
 necessary motion information for activity recognition.
 
+## Model training
+
+The training scripts use Python 3.11. The released dependency list was created from the `act_recog` conda environment, which used Python 3.11.11.
+
+Install the model-training dependencies with a Python virtual environment:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+The scripts load participant configs from `config/pretraining` and `config/supervised_training`. Data is read from `dataset`, pretrained models are written to `pretrained_*_models`, and supervised results are written to `output`.
+
+Run the three pretraining scripts first:
+
+```bash
+python model/train_contrastive.py
+python model/train_cpc.py
+python model/train_mask_modeling.py
+```
+
+Then run supervised training:
+
+```bash
+python model/supervised_train_on_all_task.py
+```

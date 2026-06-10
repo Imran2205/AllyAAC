@@ -1,3 +1,4 @@
+import json
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -172,10 +173,6 @@ class ContrastiveIMUDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        """
-        Return an anchor sample, its positive pair (augmented version),
-        and one or more negative samples (different windows)
-        """
         anchor = self.data[idx]
         anchor_tensor = torch.tensor(anchor, dtype=torch.float32)
 
@@ -504,7 +501,6 @@ class NTXentLoss(nn.Module):
         Returns:
         - Loss value or (loss, logits) tuple if return_logits is True
         """
-        # Allow return_logits to be overridden in the call
         return_logits = self.return_logits if return_logits is None else return_logits
 
         device = anchor_embeddings.device
@@ -1080,41 +1076,24 @@ def compute_and_save_normalization_stats(data_dir, output_dir, features=None):
     return stats
 
 if __name__ == "__main__":
-    users = ['P03', 'P04', 'P05', 'P06']
+    release_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    os.chdir(release_root)
+    config_root = os.path.join(release_root, 'config', 'pretraining')
+    dataset_root = os.path.join(release_root, 'dataset')
+    users = sorted(
+        user for user in os.listdir(dataset_root)
+        if os.path.isfile(os.path.join(config_root, user, 'contrastive_config.json'))
+    )
+
     for user in users:
-        CONFIG = {
-            'data_dir': f'./dataset/{user}',  # Directory containing CSV files
-            'output_dir': f'./pretrained_contrastive_models/{user}',  # Directory to save trained models
-            'window_size': 120,  # Number of samples in each window
-            'overlap': 0.7,  # Fraction of overlap between consecutive windows
-            'batch_size': 32,  # Batch size for training
-            'num_epochs': 200,  # Number of training epochs
-            'd_model': 128,  # Model dimension
-            'nhead': 4,  # Number of attention heads
-            'num_layers': 3,  # Number of transformer layers
-            'dropout': 0.2,  # Dropout rate
-            'device': 'cuda:3' if torch.cuda.is_available() else 'cpu',  # Device for training
-            'learning_rate': 5e-4,  # Learning rate for optimizer
-            'weight_decay': 1e-5,  # Weight decay for regularization
-            'lr_factor': 0.7,  # Factor by which to reduce learning rate on plateau
-            'patience': 5,  # Number of epochs to wait before reducing learning rate
-            'sampling_rate': 50,  # IMU data sampling rate in Hz
-            'val_split': 0.2,  # Validation split ratio
-            'jitter_scale': 0.1,  # Scale of jitter noise
-            'time_warp_scale': 0.2,  # Scale of time warping
-            'rotation_angle': 10,  # Maximum rotation angle in degrees
-            'magnitude_scale': 0.1,  # Scale for magnitude scaling
-            'random_seed': 42,
-            'temperature': 0.07,  # Temperature parameter for NT-Xent loss
-            'projection_dim': 64,  # Dimension of projection head output
-            'num_negatives': 5,  # Number of negative samples per positive pair
-            'negative_mining_strategy': 'temporal',  # Strategy for negative mining: 'random', 'temporal', or 'hard'
-            'temporal_distance': 50,  # Minimum temporal distance for negative samples
-            'contrastive_augmentation_strength': 'strong',  # Augmentation strength: 'normal' or 'strong'
-            'permute_segments': True,  # Whether to use permutation augmentation
-            'mask_segments': True,  # Whether to use masking augmentation
-            'early_stopping_patience': 50,  # Patience for early stopping
-        }
+        config_path = os.path.join(config_root, user, 'contrastive_config.json')
+        with open(config_path, 'r') as f:
+            CONFIG = json.load(f)
+
+        CONFIG['data_dir'] = f'./dataset/{user}'
+        CONFIG['output_dir'] = f'./pretrained_contrastive_models/{user}'
+        if not torch.cuda.is_available():
+            CONFIG['device'] = 'cpu'
 
         norm_stat = compute_and_save_normalization_stats(
             CONFIG['data_dir'],

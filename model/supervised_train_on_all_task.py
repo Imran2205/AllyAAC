@@ -276,17 +276,14 @@ class IMUDataAugmenter:
         self.magnitude_scale = config.get('magnitude_scale', 0.1)
 
     def jitter(self, x):
-        """Add random noise"""
         return x + torch.randn_like(x) * self.jitter_scale * x.std(dim=1, keepdim=True)
 
     def scale_magnitude(self, x):
-        """Apply random scaling to signal magnitude"""
         factor = torch.randn(x.shape[0], 1, x.shape[2]) * self.magnitude_scale + 1
         factor = factor.to(x.device)
         return x * factor
 
     def time_warp(self, x):
-        """Apply random time warping"""
         batch_size, seq_len, features = x.shape
 
         warp = torch.zeros(batch_size, seq_len).to(x.device)
@@ -315,7 +312,6 @@ class IMUDataAugmenter:
         return warped_x
 
     def rotate(self, x):
-        """Apply rotations to accelerometer and gyroscope data"""
         batch_size = x.shape[0]
         device = x.device
 
@@ -366,7 +362,6 @@ class IMUDataAugmenter:
         return rotated_x
 
     def __call__(self, x):
-        """Apply random augmentations"""
         augmentations = [
             self.jitter,
             self.scale_magnitude,
@@ -1430,45 +1425,33 @@ def compute_and_save_normalization_stats(data_dir, output_dir, features=None):
 
 if __name__ == "__main__":
     import time
-    users = ['P03', 'P04', 'P05', 'P06']
+    release_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    os.chdir(release_root)
+    config_root = os.path.join(release_root, 'config', 'supervised_training')
+    dataset_root = os.path.join(release_root, 'dataset')
+    config_files = {
+        'contrastive': 'contrastive_config.json',
+        'cpc': 'cpc_config.json',
+        'masked_modeling': 'masked_modeling_config.json',
+    }
+    users = sorted(
+        user for user in os.listdir(dataset_root)
+        if all(os.path.isfile(os.path.join(config_root, user, filename)) for filename in config_files.values())
+    )
+
     for user in users:
-        BASE_CONFIG = {
-            'data_dir': f'./dataset/{user}',  # Directory containing CSV files
-            'output_dir': f'./output/{user}',  # Base directory for outputs
-            'input_dim': 6,  # Number of input channels (acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z)
-            'window_size': 120,  # Number of samples in each window
-            'overlap': 0.9,  # Fraction of overlap between consecutive windows
-            'batch_size': 32,  # Batch size for training
-            'num_epochs': 50,  # Maximum number of training epochs
-            'd_model': 128,  # Model dimension
-            'nhead': 4,  # Number of attention heads
-            'num_layers': 3,  # Number of transformer layers
-            'dropout': 0.2,  # Dropout rate
-            'device': 'cuda:3' if torch.cuda.is_available() else 'cpu',  # Device for training
-            'learning_rate': 5e-4,  # Base learning rate for supervised training
-            'weight_decay': 1e-5,  # Weight decay for regularization
-            'scheduler': 'plateau',  # Learning rate scheduler ('plateau', 'cosine', or 'onecycle')
-            'lr_factor': 0.5,  # Factor by which to reduce learning rate on plateau
-            'patience': 5,  # Number of epochs to wait before reducing learning rate
-            'early_stopping_patience': 8,  # Patience for early stopping
-            'sampling_rate': 50,  # IMU data sampling rate in Hz
-            'labeled_data_dir': f'./dataset/{user}',  # Directory with class-labeled files
-            'gradient_clipping': True,  # Whether to use gradient clipping
-            'clip_value': 1.0,  # Maximum gradient norm
-            'use_class_weights': True,  # Whether to use class weights in loss function
-            'balance_classes': True,  # Whether to balance classes through augmentation
-            'balance_threshold': 1.5,  # Minimum imbalance ratio to trigger class balancing
-            'jitter_scale': 0.1,  # Scale of jitter noise
-            'time_warp_scale': 0.2,  # Scale of time warping
-            'rotation_angle': 10,  # Maximum rotation angle in degrees
-            'magnitude_scale': 0.1,  # Scale for magnitude scaling
-            'random_seed': 42,  # Random seed for reproducibility
-            'num_workers': 4,  # Number of dataloader workers
-            'pin_memory': True,  # Whether to pin memory in dataloader
-            'progressive_unfreezing': True,  # Whether to progressively unfreeze layers
-            'unfreeze_after': 5,  # Epoch to start unfreezing encoder
-            'use_layerwise_lr': True,  # Whether to use different learning rates for different layers
-        }
+        method_configs = {}
+        for method, filename in config_files.items():
+            config_path = os.path.join(config_root, user, filename)
+            with open(config_path, 'r') as f:
+                method_configs[method] = json.load(f)
+
+        BASE_CONFIG = method_configs['contrastive'].copy()
+        BASE_CONFIG['data_dir'] = f'./dataset/{user}'
+        BASE_CONFIG['labeled_data_dir'] = f'./dataset/{user}'
+        BASE_CONFIG['output_dir'] = f'./output/{user}'
+        if not torch.cuda.is_available():
+            BASE_CONFIG['device'] = 'cpu'
 
         norm_stat = compute_and_save_normalization_stats(
             BASE_CONFIG['data_dir'],
@@ -1476,25 +1459,19 @@ if __name__ == "__main__":
         )
 
         BASE_CONFIG['normalization_stat'] = norm_stat
-        def compare_pretraining_methods_():
-            pretrained_paths = {
-                'contrastive': f"./pretrained_contrastive_models/{user}/best_contrastive_model.pth",
-                'cpc': f"./pretrained_cpc_models/{user}/best_cpc_model.pth",
-                'masked_modeling': f'./pretrained_masked_models/{user}/best_pretrained_masked.pth',
-            }
+        pretrained_paths = {
+            method: method_configs[method]['pretrained_path']
+            for method in config_files
+        }
 
-            config = BASE_CONFIG.copy()
-            config['num_epochs'] = 25
-            config['early_stopping_patience'] = 8
-            config['output_dir'] = f'./output/{user}'
-            config['freeze_strategy'] = 'none'
-            start_time = time.time()
-            results = compare_pretraining_methods(config, pretrained_paths)
-            comparison_time = time.time() - start_time
-            best_method = max(results.items(), key=lambda x: x[1]['best_val_acc'])[0]
-            best_acc = results[best_method]['best_val_acc'] * 100
-            print(f"Best pretraining method: {best_method} with validation accuracy: {best_acc:.2f}%")
-            return results
-
-        results = compare_pretraining_methods_()
-        
+        config = BASE_CONFIG.copy()
+        config['num_epochs'] = 25
+        config['early_stopping_patience'] = 8
+        config['output_dir'] = f'./output/{user}'
+        config['freeze_strategy'] = 'none'
+        start_time = time.time()
+        results = compare_pretraining_methods(config, pretrained_paths)
+        comparison_time = time.time() - start_time
+        best_method = max(results.items(), key=lambda x: x[1]['best_val_acc'])[0]
+        best_acc = results[best_method]['best_val_acc'] * 100
+        print(f"Best pretraining method: {best_method} with validation accuracy: {best_acc:.2f}%")
