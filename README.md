@@ -20,4 +20,3 @@ either by de-identifying the videos through face and identifiable-feature
 blurring or by providing pose/skeleton representations that preserve the 
 necessary motion information for activity recognition.
 
-The code for the large model will be made available soon.

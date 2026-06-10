@@ -1480,7 +1480,7 @@ if __name__ == "__main__":
             pretrained_paths = {
                 'cpc': f"./pretrained_models/{user}/best_cpc_model.pth",
                 'contrastive': f"./pretrained_models/{user}/best_contrastive_model.pth",
-                'masked_modeling': f'./pretrained_models/{user}__/best_pretrained_imu_transformer.pth',
+                'masked_modeling': f'./pretrained_models/{user}/best_pretrained_imu_transformer.pth',
             }
 
             config = BASE_CONFIG.copy()
