@@ -1478,9 +1478,9 @@ if __name__ == "__main__":
         BASE_CONFIG['normalization_stat'] = norm_stat
         def compare_pretraining_methods_():
             pretrained_paths = {
-                'cpc': f"./pretrained_models/{user}/best_cpc_model.pth",
-                'contrastive': f"./pretrained_models/{user}/best_contrastive_model.pth",
-                'masked_modeling': f'./pretrained_models/{user}/best_pretrained_imu_transformer.pth',
+                'contrastive': f"./pretrained_contrastive_models/{user}/best_contrastive_model.pth",
+                'cpc': f"./pretrained_cpc_models/{user}/best_cpc_model.pth",
+                'masked_modeling': f'./pretrained_masked_models/{user}/best_pretrained_masked.pth',
             }
 
             config = BASE_CONFIG.copy()
