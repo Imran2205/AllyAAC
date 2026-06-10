@@ -58,7 +58,7 @@ For motor-impaired participants, different pretraining strategies performed bett
 depending on their gesture types, as discussed in the paper. For participants 
 without motor impairments, the scores across all three strategies were comparable.
 
-Note: We cleaned up the data and reran the training. 
+Note: We did some data cleanup before the release and reran the training. 
 The updated results are shown below. 
 The slight numerical differences from the paper are due to this data cleanup. 
 However, the overall trend remains the same: the best pretraining strategy for each 
