@@ -59,7 +59,7 @@ depending on their gesture types, as discussed in the paper. For participants
 without motor impairments, the scores across all three strategies were comparable.
 
 Note: We did some data cleanup before the release and reran the training. 
-The updated results are shown below. 
+The results on the cleaned data are shown below. 
 The slight numerical differences from the paper are due to this data cleanup. 
 However, the overall trend remains the same: the best pretraining strategy for each 
 motor-impaired participant is unchanged.
